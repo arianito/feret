@@ -1,12 +1,8 @@
 import 'reflect-metadata';
-import { describe, expect, test, beforeEach } from '@jest/globals';
-import {
-  Autowired,
-  createTestbed,
-  Container,
-  Service,
-  ServiceNotAvailable,
-} from '../src/di';
+// sep
+import { beforeEach, describe, expect, test } from '@jest/globals';
+import { Autowired, Container, createTestbed, Service } from '../src';
+import { ServiceNotAvailableError } from './../src/errors';
 
 describe('dependency injection', () => {
   let c: Container;
@@ -84,6 +80,6 @@ describe('dependency injection', () => {
   test('throw an error if accessing an unregistered service', () => {
     class Temp {}
     const fn = () => c.get(Temp);
-    expect(fn).toThrow(ServiceNotAvailable);
+    expect(fn).toThrow(ServiceNotAvailableError);
   });
 });

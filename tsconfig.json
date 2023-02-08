@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "lib",
     "target": "ES2015",
     "lib": ["dom", "ES2015"],
     "allowSyntheticDefaultImports": true,
@@ -15,5 +15,5 @@
     "jsx": "react",
     "isolatedModules": true
   },
-  "include": ["src"],
+  "include": ["src"]
 }
