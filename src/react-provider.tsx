@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren } from 'react';
-import { Container } from '../container';
-import { ReactBootContext } from './context';
+import { Container } from './container';
+import { ReactBootContext } from './react-context';
 
 export const ReactBootProvider: FC<
   PropsWithChildren<{ container: Container }>

@@ -1,5 +1,5 @@
-import { MetadataRegistry } from '../registries/metadata-registry';
-import { Constructable, ServiceOptions } from '../types';
+import { MetadataRegistry } from '../../registries';
+import { Constructable, ServiceOptions } from '../../types';
 
 export function Service<T>(options: ServiceOptions = {}): ClassDecorator {
   return (target) => {

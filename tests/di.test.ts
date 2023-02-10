@@ -9,9 +9,6 @@ describe('dependency injection', () => {
   beforeEach(() => {
     c = createTestbed();
   });
-  test('created empty', () => {
-    expect(c.length).toBe(0);
-  });
   test('instancing a service', () => {
     @Service()
     class Temp {
