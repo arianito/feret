@@ -1,4 +1,5 @@
 import { ArrayOneOrMore, Identifier, ServiceIdentifier, ServiceMetadata } from '../../types';
+import { ScheduleOptions } from '../../utils';
 
 export type ObservableDefinition = {
   propertyName: Identifier;
@@ -21,10 +22,6 @@ export type NotifyEvent = {
   bulk: Array<Message>;
 };
 
-export type ScheduleOptions = {
-  schedule?: 'debounced' | 'throttled';
-  cycleMs?: number;
-};
 
 export type ObserverOptions = {
   services: ArrayOneOrMore<ServiceIdentifier>;

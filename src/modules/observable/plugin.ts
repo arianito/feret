@@ -1,12 +1,11 @@
 import { MetadataRegistry, PluginRegistry } from '../../registries';
 import { ServiceIdentifier } from '../../types';
-import { isObject } from '../../utils';
-import { NativeEventBus } from '../../utils/event-bus';
+import { isObject, NativeEventBus } from '../../utils';
+import { Scheduler } from '../../utils/scheduler';
 import { getVault } from '../../utils/vault';
 import { BasePlugin } from '../base-plugin';
 import { ProxyProvider } from './proxy-provider';
-import { Scheduler } from './scheduler';
-import { NotifyEvent, ObservableDefinition } from './types';
+import { Message, NotifyEvent, ObservableDefinition } from './types';
 
 export class ObservablePlugin extends BasePlugin {
   private static sObservables = new WeakMap<
@@ -37,7 +36,7 @@ export class ObservablePlugin extends BasePlugin {
 
     const metadata = MetadataRegistry.get(target);
     const vault = getVault(instance);
-    const scheduler = new Scheduler<unknown>((bulk) => {
+    const scheduler = new Scheduler<Message<unknown>>((bulk) => {
       bulk.forEach(({ force, propertyName, object }) => {
         const isValueDiffers = object !== vault.get(propertyName);
         if (!isValueDiffers && !force) return;

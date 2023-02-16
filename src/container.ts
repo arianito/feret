@@ -22,14 +22,6 @@ export class Container {
   private mPlugins = new WeakMap<PluginConstructor, BasePlugin>();
 
   constructor(private config: ContainerConfig = {}) {
-    MetadataRegistry.set(Container, {
-      type: Container,
-      scope: 'container',
-      version: 1,
-      getUniqueKey() {
-        return Container.name;
-      },
-    });
     PluginRegistry.forEach((constructor) => {
       const plugin = new constructor(this);
       this.mPlugins.set(constructor, plugin);
@@ -73,7 +65,7 @@ export class Container {
   }
 
   private getService(metadata: ServiceMetadata) {
-    const constructableTargetType: Constructable<unknown> = metadata.type;
+    const constructableTargetType = metadata.type;
     const paramTypes =
       (Reflect as any).getMetadata(
         'design:paramtypes',
@@ -115,3 +107,5 @@ export class Container {
     this.mInstanceRegistry.forEach(callback);
   }
 }
+
+MetadataRegistry.register(Container);

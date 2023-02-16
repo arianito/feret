@@ -1,4 +1,4 @@
-import { ServiceIdentifier, ServiceMetadata } from '../types';
+import { Constructable, ServiceIdentifier, ServiceMetadata } from '../types';
 
 export class MetadataRegistry {
   private static sCurrentId = 0;
@@ -12,6 +12,17 @@ export class MetadataRegistry {
       getUniqueKey(suffix) {
         if (suffix) return `${key}_${String(suffix)}`;
         return key;
+      },
+    });
+  }
+
+  static register(type: ServiceIdentifier) {
+    MetadataRegistry.set(type, {
+      type: type as unknown as Constructable<unknown>,
+      scope: 'container',
+      version: 1,
+      getUniqueKey() {
+        return type.name;
       },
     });
   }

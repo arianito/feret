@@ -1,14 +1,15 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { ReactBootContext } from '../../react-context';
 import { ArrayOneOrMore, ServiceIdentifier } from '../../types';
+import { Scheduler } from '../../utils';
 import { ObservablePlugin } from './plugin';
-import { Scheduler } from './scheduler';
 
 import {
   LocalStateMutateFunction,
   LocalStateType,
+  Message,
   NotifyEvent,
-  ObserverOptions,
+  ObserverOptions
 } from './types';
 
 export function useObserver(
@@ -29,7 +30,7 @@ export function useObserver(
   const attached = useRef(true);
 
   const scheduler = useRef(
-    new Scheduler<LocalStateMutateFunction>((buff) => {
+    new Scheduler<Message<LocalStateMutateFunction>>((buff) => {
       if (!attached) return;
       if (buff.length > 0) {
         setLocalState((localState) => {
