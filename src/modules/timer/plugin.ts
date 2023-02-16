@@ -4,7 +4,10 @@ import { BasePlugin } from '../base-plugin';
 import { TimerDefinition } from './types';
 
 export class TimerPlugin extends BasePlugin {
-  private static sTimers = new WeakMap<ServiceIdentifier, Array<TimerDefinition>>();
+  private static sTimers = new WeakMap<
+    ServiceIdentifier,
+    Array<TimerDefinition>
+  >();
 
   onServiceInstantiated(
     target: ServiceIdentifier<unknown>,

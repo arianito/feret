@@ -1,6 +1,5 @@
-import throttleFn from 'lodash/throttle';
 import debounceFn from 'lodash/debounce';
-
+import throttleFn from 'lodash/throttle';
 
 export type ScheduleOptions = {
   schedule?: 'debounced' | 'throttled';

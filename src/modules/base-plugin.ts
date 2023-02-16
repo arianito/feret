@@ -6,4 +6,6 @@ export class BasePlugin {
   onServiceInstantiated(target: ServiceIdentifier, instance: unknown) {}
 }
 
-export type PluginConstructor<T = BasePlugin> = new (mContainer: Container) => T;
+export type PluginConstructor<T = BasePlugin> = new (
+  mContainer: Container,
+) => T;

@@ -1,4 +1,9 @@
-import { ArrayOneOrMore, Identifier, ServiceIdentifier, ServiceMetadata } from '../../types';
+import {
+  ArrayOneOrMore,
+  Identifier,
+  ServiceIdentifier,
+  ServiceMetadata
+} from '../../types';
 import { ScheduleOptions } from '../../utils';
 
 export type ObservableDefinition = {
@@ -21,7 +26,6 @@ export type NotifyEvent = {
   metadata: ServiceMetadata;
   bulk: Array<Message>;
 };
-
 
 export type ObserverOptions = {
   services: ArrayOneOrMore<ServiceIdentifier>;

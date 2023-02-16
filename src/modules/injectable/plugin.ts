@@ -30,7 +30,6 @@ export class InjectablePlugin extends BasePlugin {
   };
 
   static extend(target: ServiceIdentifier, property: PropertyDefinition) {
-    
     let service = InjectablePlugin.sInjectables.get(target);
     if (!service) {
       service = [];

@@ -14,9 +14,9 @@ export class MQPlugin extends BasePlugin {
 
   private readonly mGlobalChannelName = '*';
   private readonly mEventBus = new NativeEventBus<unknown>();
-  
+
   constructor(container: Container) {
-    super(container)
+    super(container);
   }
 
   subscribe(

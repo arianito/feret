@@ -13,9 +13,7 @@ import {
 } from './types';
 
 export function useObserver(
-  opts:
-    | ObserverOptions
-    | ArrayOneOrMore<ServiceIdentifier>,
+  opts: ObserverOptions | ArrayOneOrMore<ServiceIdentifier>,
 ) {
   let options: ObserverOptions;
   if (Array.isArray(opts)) {

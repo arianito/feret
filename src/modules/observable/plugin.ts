@@ -53,45 +53,47 @@ export class ObservablePlugin extends BasePlugin {
       this.mEventBus.dispatch(metadata.getUniqueKey(), event);
     });
 
-    observables.forEach(({ propertyName, proxied, cycleMs: delay, schedule: mode }) => {
-      vault.set(propertyName, instance[propertyName]);
+    observables.forEach(
+      ({ propertyName, proxied, cycleMs: delay, schedule: mode }) => {
+        vault.set(propertyName, instance[propertyName]);
 
-      const proxyFactory = new ProxyProvider((value) => {
-        scheduler.push(
-          {
-            object: value,
-            propertyName,
-            force: true,
-          },
-          {
-            schedule: mode,
-            cycleMs: delay,
-          },
-        );
-      });
-
-      Object.defineProperty(instance, propertyName, {
-        configurable: false,
-        enumerable: true,
-        get: () => {
-          const value = vault.get(propertyName);
-          if (isObject(value) && proxied) return proxyFactory.getProxy(value);
-          return value;
-        },
-        set: (value) =>
+        const proxyFactory = new ProxyProvider((value) => {
           scheduler.push(
             {
               object: value,
               propertyName,
-              force: false,
+              force: true,
             },
             {
               schedule: mode,
               cycleMs: delay,
             },
-          ),
-      });
-    });
+          );
+        });
+
+        Object.defineProperty(instance, propertyName, {
+          configurable: false,
+          enumerable: true,
+          get: () => {
+            const value = vault.get(propertyName);
+            if (isObject(value) && proxied) return proxyFactory.getProxy(value);
+            return value;
+          },
+          set: (value) =>
+            scheduler.push(
+              {
+                object: value,
+                propertyName,
+                force: false,
+              },
+              {
+                schedule: mode,
+                cycleMs: delay,
+              },
+            ),
+        });
+      },
+    );
   }
 
   static extend(target: ServiceIdentifier, property: ObservableDefinition) {
