@@ -1,28 +1,31 @@
-import { NativeEventBus } from '../../utils/event-bus';
 import { MetadataRegistry, PluginRegistry } from '../../registries';
 import { ServiceIdentifier } from '../../types';
-import { Vault } from '../../utils/vault';
+import { isObject } from '../../utils';
+import { NativeEventBus } from '../../utils/event-bus';
+import { getVault } from '../../utils/vault';
 import { BasePlugin } from '../base-plugin';
-import { MessageType, ObservableDefinition } from './types';
+import { ProxyProvider } from './proxy-provider';
+import { Scheduler } from './scheduler';
+import { NotifyEvent, ObservableDefinition } from './types';
 
 export class ObservablePlugin extends BasePlugin {
-  private static observables = new WeakMap<
+  private static sObservables = new WeakMap<
     ServiceIdentifier,
-    ObservableDefinition[]
+    Array<ObservableDefinition>
   >();
 
-  private readonly globalChannelName = '*';
-  private readonly eventBus = new NativeEventBus<MessageType>();
+  private readonly mGlobalChannelName = '*';
+  private readonly mEventBus = new NativeEventBus<NotifyEvent>();
 
   subscribe(
     target: ServiceIdentifier<unknown>,
-    listener: (message: CustomEvent<MessageType>) => void,
+    listener: (message: CustomEvent<NotifyEvent>) => void,
   ) {
     const metadata = MetadataRegistry.get(target);
-    return this.eventBus.subscribe(metadata.getUniqueKey(), listener);
+    return this.mEventBus.subscribe(metadata.getUniqueKey(), listener);
   }
-  subscribeAll(listener: (message: CustomEvent<MessageType>) => void) {
-    return this.eventBus.subscribe(this.globalChannelName, listener);
+  subscribeAll(listener: (message: CustomEvent<NotifyEvent>) => void) {
+    return this.mEventBus.subscribe(this.mGlobalChannelName, listener);
   }
 
   onServiceInstantiated(
@@ -33,49 +36,75 @@ export class ObservablePlugin extends BasePlugin {
     if (!observables) return;
 
     const metadata = MetadataRegistry.get(target);
-    const vault = Vault.getVault(instance);
+    const vault = getVault(instance);
+    const scheduler = new Scheduler<unknown>((bulk) => {
+      bulk.forEach(({ force, propertyName, object }) => {
+        const isValueDiffers = object !== vault.get(propertyName);
+        if (!isValueDiffers && !force) return;
+        vault.set(propertyName, object);
+      });
 
-    observables.forEach((propertyName) => {
+      const event: NotifyEvent = {
+        type: target,
+        metadata,
+        bulk,
+      };
+
+      this.mEventBus.dispatch(this.mGlobalChannelName, event);
+      this.mEventBus.dispatch(metadata.getUniqueKey(), event);
+    });
+
+    observables.forEach(({ propertyName, proxied, delay, mode }) => {
       vault.set(propertyName, instance[propertyName]);
+
+      const proxyFactory = new ProxyProvider((value) => {
+        scheduler.push(
+          {
+            object: value,
+            propertyName,
+            force: true,
+          },
+          {
+            mode,
+            delay,
+          },
+        );
+      });
+
       Object.defineProperty(instance, propertyName, {
         configurable: false,
         enumerable: true,
-        get: () => vault.get(propertyName),
-        set: (value) => {
-          const isValueDiffers = value !== vault.get(propertyName);
-          if (!isValueDiffers) return;
-
-          vault.set(propertyName, value);
-          const message: MessageType = {
-            type: target,
-            propertyKey: propertyName,
-            metadata,
-            value,
-          };
-
-          this.eventBus.dispatch(this.globalChannelName, message);
-          this.eventBus.dispatch(metadata.getUniqueKey(), message);
+        get: () => {
+          const value = vault.get(propertyName);
+          if (isObject(value) && proxied) return proxyFactory.getProxy(value);
+          return value;
         },
+        set: (value) =>
+          scheduler.push(
+            {
+              object: value,
+              propertyName,
+              force: false,
+            },
+            {
+              mode,
+              delay,
+            },
+          ),
       });
     });
   }
 
-  private static getService(target: ServiceIdentifier) {
-    let list = ObservablePlugin.observables.get(target);
-    if (!list) {
-      list = [];
-      ObservablePlugin.observables.set(target, list);
-    }
-    return list;
-  }
-
   static extend(target: ServiceIdentifier, property: ObservableDefinition) {
-    const service = ObservablePlugin.getService(target);
+    let service = ObservablePlugin.sObservables.get(target);
+    if (!service) {
+      service = [];
+      ObservablePlugin.sObservables.set(target, service);
+    }
     service.push(property);
   }
-
   static get(target: ServiceIdentifier) {
-    return ObservablePlugin.observables.get(target);
+    return ObservablePlugin.sObservables.get(target);
   }
 }
 

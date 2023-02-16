@@ -1,12 +1,12 @@
 import { PluginConstructor } from '../modules/base-plugin';
 
 export class PluginRegistry {
-  static plugins: PluginConstructor[] = [];
-  static extend(plugin: PluginConstructor[]) {
-    PluginRegistry.plugins.push(...plugin);
+  private static sPlugins: Array<PluginConstructor> = [];
+  static extend(plugin: Array<PluginConstructor>) {
+    PluginRegistry.sPlugins.push(...plugin);
   }
 
   static forEach(callback: (plugin: PluginConstructor, i: number) => void) {
-    PluginRegistry.plugins.forEach(callback);
+    PluginRegistry.sPlugins.forEach(callback);
   }
 }

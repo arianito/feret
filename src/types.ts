@@ -1,4 +1,4 @@
-export type Constructable<T> = new (...args: any[]) => T;
+export type Constructable<T> = new (...args: Array<any>) => T;
 export type AbstractConstructable<T> = NewableFunction & { prototype: T };
 export type ServiceIdentifier<T = unknown> =
   | Constructable<T>

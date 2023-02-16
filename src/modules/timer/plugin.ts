@@ -4,7 +4,7 @@ import { BasePlugin } from '../base-plugin';
 import { TimerDefinition } from './types';
 
 export class TimerPlugin extends BasePlugin {
-  private static timers = new WeakMap<ServiceIdentifier, TimerDefinition[]>();
+  private static sTimers = new WeakMap<ServiceIdentifier, Array<TimerDefinition>>();
 
   onServiceInstantiated(
     target: ServiceIdentifier<unknown>,
@@ -24,22 +24,17 @@ export class TimerPlugin extends BasePlugin {
     });
   }
 
-  private static getService(target: ServiceIdentifier) {
-    let list = TimerPlugin.timers.get(target);
-    if (!list) {
-      list = [];
-      TimerPlugin.timers.set(target, list);
-    }
-    return list;
-  }
-
   static extend(target: ServiceIdentifier, property: TimerDefinition) {
-    const service = TimerPlugin.getService(target);
+    let service = TimerPlugin.sTimers.get(target);
+    if (!service) {
+      service = [];
+      TimerPlugin.sTimers.set(target, service);
+    }
     service.push(property);
   }
 
   static get(target: ServiceIdentifier) {
-    return TimerPlugin.timers.get(target);
+    return TimerPlugin.sTimers.get(target);
   }
 }
 

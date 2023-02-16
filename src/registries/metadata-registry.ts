@@ -1,12 +1,12 @@
 import { ServiceIdentifier, ServiceMetadata } from '../types';
 
 export class MetadataRegistry {
-  private static currentId = 0;
-  private static services = new WeakMap<ServiceIdentifier, ServiceMetadata>();
+  private static sCurrentId = 0;
+  private static sServices = new WeakMap<ServiceIdentifier, ServiceMetadata>();
 
   static set(type: ServiceIdentifier, metadata: ServiceMetadata) {
     const { id, key } = MetadataRegistry.generateServiceKey(metadata);
-    MetadataRegistry.services.set(type, {
+    MetadataRegistry.sServices.set(type, {
       ...metadata,
       id,
       getUniqueKey(suffix) {
@@ -17,7 +17,7 @@ export class MetadataRegistry {
   }
 
   private static generateServiceKey(metadata: ServiceMetadata) {
-    const id = ++MetadataRegistry.currentId;
+    const id = ++MetadataRegistry.sCurrentId;
     return {
       id,
       key: `${metadata.name || String(id)}_${metadata.version}`,
@@ -25,6 +25,6 @@ export class MetadataRegistry {
   }
 
   static get(type: ServiceIdentifier) {
-    return MetadataRegistry.services.get(type);
+    return MetadataRegistry.sServices.get(type);
   }
 }

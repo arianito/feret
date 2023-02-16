@@ -17,14 +17,22 @@ export const primitiveTypes = new Set([
 ]);
 
 export class Container {
-  private instanceRegistry = new Map<ServiceIdentifier, unknown>();
-  private aliases = new WeakMap<ServiceIdentifier, ServiceMetadata>();
-  private plugins = new WeakMap<PluginConstructor, BasePlugin>();
+  private mInstanceRegistry = new Map<ServiceIdentifier, unknown>();
+  private mAliases = new WeakMap<ServiceIdentifier, ServiceMetadata>();
+  private mPlugins = new WeakMap<PluginConstructor, BasePlugin>();
 
   constructor(private config: ContainerConfig = {}) {
+    MetadataRegistry.set(Container, {
+      type: Container,
+      scope: 'container',
+      version: 1,
+      getUniqueKey() {
+        return Container.name;
+      },
+    });
     PluginRegistry.forEach((constructor) => {
       const plugin = new constructor(this);
-      this.plugins.set(constructor, plugin);
+      this.mPlugins.set(constructor, plugin);
     });
   }
 
@@ -35,7 +43,7 @@ export class Container {
       ...metadata,
       type: alias as unknown as Constructable<unknown>,
     };
-    this.aliases.set(insteadOf, serviceMetadata);
+    this.mAliases.set(insteadOf, serviceMetadata);
   }
 
   private findClass<T = unknown>(
@@ -43,7 +51,7 @@ export class Container {
   ): ServiceMetadata<T> {
     let metadata = MetadataRegistry.get(type);
     if (this.config.isTest) {
-      const aliasMetadata = this.aliases.get(type);
+      const aliasMetadata = this.mAliases.get(type);
       if (aliasMetadata) metadata = aliasMetadata;
     }
     if (!metadata) throw new ServiceNotAvailableError(type);
@@ -56,10 +64,10 @@ export class Container {
     if (metadata.scope === 'transient')
       return this.getService(metadata) as unknown as T;
 
-    let singleton = this.instanceRegistry.get(metadata.type);
+    let singleton = this.mInstanceRegistry.get(metadata.type);
     if (!singleton) {
       singleton = this.getService(metadata);
-      this.instanceRegistry.set(metadata.type, singleton);
+      this.mInstanceRegistry.set(metadata.type, singleton);
     }
     return singleton as T;
   }
@@ -87,7 +95,7 @@ export class Container {
       get: () => this,
     });
     PluginRegistry.forEach((constructor) => {
-      const plugin = this.plugins.get(constructor);
+      const plugin = this.mPlugins.get(constructor);
       if (!plugin) throw new PluginNotRegisteredError();
       plugin.onServiceInstantiated?.(constructableTargetType, instance);
     });
@@ -96,7 +104,7 @@ export class Container {
   }
 
   getPlugin<T extends BasePlugin>(type: PluginConstructor<T>): T {
-    const plugin = this.plugins.get(type) as unknown as T;
+    const plugin = this.mPlugins.get(type) as unknown as T;
     if (!plugin) throw new PluginNotRegisteredError();
     return plugin;
   }
@@ -104,6 +112,6 @@ export class Container {
   forEach(
     callback: (instance: unknown, constructableType: ServiceIdentifier) => void,
   ) {
-    this.instanceRegistry.forEach(callback);
+    this.mInstanceRegistry.forEach(callback);
   }
 }

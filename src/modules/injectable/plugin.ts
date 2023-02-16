@@ -4,9 +4,9 @@ import { BasePlugin } from '../base-plugin';
 import { PropertyDefinition } from './types';
 
 export class InjectablePlugin extends BasePlugin {
-  private static injectables = new WeakMap<
+  private static sInjectables = new WeakMap<
     ServiceIdentifier,
-    PropertyDefinition[]
+    Array<PropertyDefinition>
   >();
 
   onServiceInstantiated = (
@@ -22,29 +22,25 @@ export class InjectablePlugin extends BasePlugin {
         acc[h.propertyName] = {
           configurable: false,
           enumerable: true,
-          value: this.container.get(h.type),
+          value: this.mContainer.get(h.type),
         };
         return acc;
       }, {}),
     );
   };
 
-  private static getService(target: ServiceIdentifier) {
-    let list = InjectablePlugin.injectables.get(target);
-    if (!list) {
-      list = [];
-      InjectablePlugin.injectables.set(target, list);
-    }
-    return list;
-  }
-
   static extend(target: ServiceIdentifier, property: PropertyDefinition) {
-    const service = InjectablePlugin.getService(target);
+    
+    let service = InjectablePlugin.sInjectables.get(target);
+    if (!service) {
+      service = [];
+      InjectablePlugin.sInjectables.set(target, service);
+    }
     service.push(property);
   }
 
   static get(target: ServiceIdentifier) {
-    return InjectablePlugin.injectables.get(target);
+    return InjectablePlugin.sInjectables.get(target);
   }
 }
 
