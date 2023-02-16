@@ -6,8 +6,8 @@ export function Observable(options: ObservableOptions = {}): PropertyDecorator {
     ObservablePlugin.extend(target.constructor, {
       propertyName,
       proxied: options.proxied || false,
-      mode: options.mode,
-      delay: options.delay || 25,
+      schedule: options.schedule,
+      cycleMs: options.cycleMs || 25,
     });
   };
 }

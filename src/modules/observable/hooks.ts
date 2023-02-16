@@ -12,9 +12,18 @@ import {
 } from './types';
 
 export function useObserver(
-  services: ArrayOneOrMore<ServiceIdentifier>,
-  options: ObserverOptions = {},
+  opts:
+    | ObserverOptions
+    | ArrayOneOrMore<ServiceIdentifier>,
 ) {
+  let options: ObserverOptions;
+  if (Array.isArray(opts)) {
+    options = {
+      services: opts,
+    };
+  } else {
+    options = opts;
+  }
   const { container } = useContext(ReactBootContext);
   const [_, setLocalState] = useState<LocalStateType>({});
   const attached = useRef(true);
@@ -43,7 +52,7 @@ export function useObserver(
   const onMessage = useCallback(
     (e: CustomEvent<NotifyEvent>) => {
       const { type, metadata, bulk } = e.detail;
-      if (!services.includes(type)) return;
+      if (!options.services.includes(type)) return;
       bulk.forEach(({ force, propertyName, object }) => {
         const uniquePropertyPath = metadata.getUniqueKey(propertyName);
         scheduler.current.push(
@@ -59,13 +68,13 @@ export function useObserver(
             force,
           },
           {
-            mode: options.mode,
-            delay: options.delay || 25,
+            schedule: options.schedule,
+            cycleMs: options.cycleMs || 25,
           },
         );
       });
     },
-    [services, options],
+    [options],
   );
 
   useEffect(() => {
@@ -73,13 +82,13 @@ export function useObserver(
 
     let release: any = undefined;
 
-    if (services.length === 1)
-      release = observablePlugin.subscribe(services[0], onMessage);
+    if (options.services.length === 1)
+      release = observablePlugin.subscribe(options.services[0], onMessage);
     else release = observablePlugin.subscribeAll(onMessage);
 
     return () => {
       attached.current = false;
       release();
     };
-  }, [services]);
+  }, [options]);
 }

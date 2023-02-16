@@ -54,7 +54,7 @@ export class ObservablePlugin extends BasePlugin {
       this.mEventBus.dispatch(metadata.getUniqueKey(), event);
     });
 
-    observables.forEach(({ propertyName, proxied, delay, mode }) => {
+    observables.forEach(({ propertyName, proxied, cycleMs: delay, schedule: mode }) => {
       vault.set(propertyName, instance[propertyName]);
 
       const proxyFactory = new ProxyProvider((value) => {
@@ -65,8 +65,8 @@ export class ObservablePlugin extends BasePlugin {
             force: true,
           },
           {
-            mode,
-            delay,
+            schedule: mode,
+            cycleMs: delay,
           },
         );
       });
@@ -87,8 +87,8 @@ export class ObservablePlugin extends BasePlugin {
               force: false,
             },
             {
-              mode,
-              delay,
+              schedule: mode,
+              cycleMs: delay,
             },
           ),
       });

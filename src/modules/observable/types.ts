@@ -1,4 +1,4 @@
-import { Identifier, ServiceIdentifier, ServiceMetadata } from '../../types';
+import { ArrayOneOrMore, Identifier, ServiceIdentifier, ServiceMetadata } from '../../types';
 
 export type ObservableDefinition = {
   propertyName: Identifier;
@@ -22,11 +22,13 @@ export type NotifyEvent = {
 };
 
 export type ScheduleOptions = {
-  mode?: 'debounced' | 'throttled';
-  delay?: number;
+  schedule?: 'debounced' | 'throttled';
+  cycleMs?: number;
 };
 
-export type ObserverOptions = {} & ScheduleOptions;
+export type ObserverOptions = {
+  services: ArrayOneOrMore<ServiceIdentifier>;
+} & ScheduleOptions;
 
 export type LocalStateType = Record<string, any>;
 

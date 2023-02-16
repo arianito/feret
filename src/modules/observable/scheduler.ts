@@ -17,8 +17,8 @@ export class Scheduler<T> {
     this.processMessages(buffer.splice(0, buffer.length));
 
   push(message: Message<T>, options: ScheduleOptions) {
-    const mode = options.mode;
-    const delay = options.delay || 25;
+    const mode = options.schedule;
+    const delay = options.cycleMs || 25;
     const key = `${mode}_${delay}`;
 
     let obj = this.mBuffer.get(key);
