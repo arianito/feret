@@ -2,7 +2,7 @@ import {
   ArrayOneOrMore,
   Identifier,
   ServiceIdentifier,
-  ServiceMetadata
+  ServiceMetadata,
 } from '../../types';
 import { ScheduleOptions } from '../../utils';
 

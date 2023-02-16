@@ -9,7 +9,7 @@ import {
   LocalStateType,
   Message,
   NotifyEvent,
-  ObserverOptions
+  ObserverOptions,
 } from './types';
 
 export function useObserver(

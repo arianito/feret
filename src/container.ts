@@ -1,7 +1,7 @@
 import {
   PluginNotRegisteredError,
   ReflectionNotAvailableError,
-  ServiceNotAvailableError
+  ServiceNotAvailableError,
 } from './errors';
 import { BasePlugin, PluginConstructor } from './modules/base-plugin';
 import { MetadataRegistry, PluginRegistry } from './registries';
@@ -9,7 +9,7 @@ import {
   Constructable,
   ContainerConfig,
   ServiceIdentifier,
-  ServiceMetadata
+  ServiceMetadata,
 } from './types';
 
 export const primitiveTypes = new Set([
