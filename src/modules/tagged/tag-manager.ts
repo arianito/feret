@@ -7,13 +7,14 @@ import { ContainerSnapshot, ServiceSnapshot } from './types';
 export class TagManager {
   constructor(private readonly container: Container) {}
 
-  getSnapshot(catchTheseTags: ArrayOneOrMore<string>) {
+  getSnapshot(...catchTheseTags: ArrayOneOrMore<string>) {
     const snapshot: ContainerSnapshot = {};
     TagPlugin.forEach((properties, constructableType) => {
       const serviceMetadata = MetadataRegistry.get(constructableType);
       if (serviceMetadata.scope !== 'container') return;
       const uniqueServiceIdentifier = serviceMetadata.getUniqueKey();
       const serviceInstance = this.container.get(constructableType);
+      let isServiceExportable = false;
       const persistedProperties = properties.reduce<ServiceSnapshot>(
         (acc, { propertyName, tags }) => {
           const setOfTags = new Set(catchTheseTags);
@@ -21,11 +22,13 @@ export class TagManager {
             setOfTags.has(tag),
           );
           if (!doesContainPredefinedTags) return acc;
+          isServiceExportable = true;
           acc[String(propertyName)] = serviceInstance[propertyName];
           return acc;
         },
         {},
       );
+      if (!isServiceExportable) return;
       snapshot[uniqueServiceIdentifier] = persistedProperties;
     });
     return snapshot;
