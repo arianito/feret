@@ -1,7 +1,6 @@
 import afterFn from 'lodash/after';
 import beforeFn from 'lodash/before';
 import debounceFn from 'lodash/debounce';
-import deferFn from 'lodash/defer';
 import onceFn from 'lodash/once';
 import throttleFn from 'lodash/throttle';
 import { FunctionalDefinition, typeGuards } from './types';
@@ -36,7 +35,9 @@ export function getFunction(
     });
   }
   if (typeGuards.isDefer(functional)) {
-    return deferFn(proxyFunction);
+    return (...args: any[]) => (
+			setTimeout(() => proxyFunction.apply(null, args), 0)
+		);
   }
   return proxyFunction;
 }

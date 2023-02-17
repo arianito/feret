@@ -23,6 +23,7 @@ export type ServiceMetadata<T = unknown> = {
 
 export type ContainerConfig = {
   isTest?: boolean;
+  debug?: boolean;
 };
 
 export type ArrayOneOrMore<T> = { 0: T } & Array<T>;

@@ -10,9 +10,10 @@ export * from './modules';
 export * from './react-provider';
 export * from './types';
 
-export function createContainer() {
+export function createContainer(debug?: boolean) {
   return new Container({
     isTest: false,
+    debug,
   });
 }
 

@@ -28,7 +28,7 @@ export class Container {
     });
   }
 
-  alias(alias: ServiceIdentifier, insteadOf: ServiceIdentifier) {
+  test(alias: ServiceIdentifier, insteadOf: ServiceIdentifier) {
     const metadata = MetadataRegistry.get(insteadOf);
     if (!metadata) throw new ServiceNotAvailableError(insteadOf);
     const serviceMetadata: ServiceMetadata = {

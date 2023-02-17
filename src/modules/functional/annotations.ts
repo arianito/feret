@@ -16,9 +16,17 @@ export function Once(): PropertyDecorator {
   };
 }
 
+export function After(): PropertyDecorator;
+export function After(n: number): PropertyDecorator;
 export function After(
-  options: FunctionalOptions<AfterDefinition> = {},
+  options: FunctionalOptions<AfterDefinition>,
+): PropertyDecorator;
+export function After(
+  opts: number | FunctionalOptions<AfterDefinition> = {},
 ): PropertyDecorator {
+  let options: FunctionalOptions<AfterDefinition>;
+  if (typeof opts === 'number') options = { n: opts };
+  else options = opts;
   return (target, propertyName) => {
     FunctionalPlugin.extend(target.constructor, {
       type: 'after',
@@ -27,10 +35,17 @@ export function After(
     });
   };
 }
-
+export function Before(): PropertyDecorator;
+export function Before(n: number): PropertyDecorator;
 export function Before(
-  options: FunctionalOptions<BeforeDefinition> = {},
+  options: FunctionalOptions<BeforeDefinition>,
+): PropertyDecorator;
+export function Before(
+  opts: number | FunctionalOptions<BeforeDefinition> = {},
 ): PropertyDecorator {
+  let options: FunctionalOptions<BeforeDefinition>;
+  if (typeof opts === 'number') options = { n: opts };
+  else options = opts;
   return (target, propertyName) => {
     FunctionalPlugin.extend(target.constructor, {
       type: 'before',
@@ -39,10 +54,18 @@ export function Before(
     });
   };
 }
-
+export function Debounce(): PropertyDecorator;
+export function Debounce(wait: number): PropertyDecorator;
 export function Debounce(
-  options: FunctionalOptions<DebounceDefinition> = {},
+  options: FunctionalOptions<DebounceDefinition>,
+): PropertyDecorator;
+export function Debounce(
+  opts: number | FunctionalOptions<DebounceDefinition> = {},
 ): PropertyDecorator {
+  let options: FunctionalOptions<DebounceDefinition>;
+  if (typeof opts === 'number') options = { wait: opts };
+  else options = opts;
+
   return (target, propertyName) => {
     FunctionalPlugin.extend(target.constructor, {
       type: 'debounce',
@@ -54,9 +77,17 @@ export function Debounce(
   };
 }
 
+export function Throttle(): PropertyDecorator;
+export function Throttle(wait: number): PropertyDecorator;
 export function Throttle(
-  options: FunctionalOptions<ThrottleDefinition> = {},
+  options: FunctionalOptions<ThrottleDefinition>,
+): PropertyDecorator;
+export function Throttle(
+  opts: number | FunctionalOptions<ThrottleDefinition> = {},
 ): PropertyDecorator {
+  let options: FunctionalOptions<DebounceDefinition>;
+  if (typeof opts === 'number') options = { wait: opts };
+  else options = opts;
   return (target, propertyName) => {
     FunctionalPlugin.extend(target.constructor, {
       type: 'throttle',
