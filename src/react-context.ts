@@ -1,8 +1,8 @@
 import { createContext } from 'react';
 import { Container } from './container';
 
-type ReactBootContextType = {
+type FeretContextType = {
   container?: Container;
 };
 
-export const ReactBootContext = createContext<ReactBootContextType>({});
+export const FeretContext = createContext<FeretContextType>({});

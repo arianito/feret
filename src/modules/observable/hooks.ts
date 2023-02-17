@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { ReactBootContext } from '../../react-context';
+import { FeretContext } from '../../react-context';
 import { ArrayOneOrMore, ServiceIdentifier } from '../../types';
 import { Scheduler } from '../../utils';
 import { ObservablePlugin } from './plugin';
@@ -23,7 +23,7 @@ export function useObserver(
   } else {
     options = opts;
   }
-  const { container } = useContext(ReactBootContext);
+  const { container } = useContext(FeretContext);
   const [_, setLocalState] = useState<LocalStateType>({});
   const attached = useRef(true);
 

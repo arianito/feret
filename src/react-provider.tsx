@@ -1,13 +1,14 @@
 import React, { FC, PropsWithChildren } from 'react';
 import { Container } from './container';
-import { ReactBootContext } from './react-context';
+import { FeretContext } from './react-context';
 
-export const ReactBootProvider: FC<
-  PropsWithChildren<{ container: Container }>
-> = ({ container, children }) => {
+export const FeretProvider: FC<PropsWithChildren<{ container: Container }>> = ({
+  container,
+  children,
+}) => {
   return (
-    <ReactBootContext.Provider value={{ container }}>
+    <FeretContext.Provider value={{ container }}>
       {children}
-    </ReactBootContext.Provider>
+    </FeretContext.Provider>
   );
 };
