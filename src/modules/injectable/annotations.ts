@@ -2,7 +2,7 @@ import { ReflectionNotAvailableError } from '../../errors';
 import { ServiceIdentifier } from '../../types';
 import { InjectablePlugin } from './plugin';
 
-export function Autowired(): PropertyDecorator {
+export function Injected(): PropertyDecorator {
   return (target, propertyName) => {
     const type: ServiceIdentifier = (Reflect as any).getMetadata(
       'design:type',
