@@ -21,9 +21,13 @@ export type ServiceMetadata<T = unknown> = {
   getUniqueKey: (suffix?: Identifier) => string;
 };
 
+export type DebugOptions = {
+  debug?: boolean;
+  identifier?: string;
+};
+
 export type ContainerConfig = {
   isTest?: boolean;
-  debug?: boolean;
 };
 
 export type ArrayOneOrMore<T> = { 0: T } & Array<T>;

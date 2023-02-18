@@ -8,6 +8,7 @@ import { MetadataRegistry, PluginRegistry } from './registries';
 import {
   Constructable,
   ContainerConfig,
+  DebugOptions,
   ServiceIdentifier,
   ServiceMetadata,
 } from './types';
@@ -15,6 +16,8 @@ import {
 export const primitiveTypes = new Set([
   ['string', 'boolean', 'number', 'object'],
 ]);
+
+const DEFAULT_DEBUG_IDENTIFIER = 'feret';
 
 export class Container {
   private mInstanceRegistry = new Map<ServiceIdentifier, unknown>();
@@ -25,6 +28,35 @@ export class Container {
     PluginRegistry.forEach((constructor) => {
       const plugin = new constructor(this);
       this.mPlugins.set(constructor, plugin);
+    });
+  }
+
+  enableDebug();
+  enableDebug(enabled: boolean);
+  enableDebug(options: DebugOptions);
+  enableDebug(opts: boolean | DebugOptions = { debug: true }) {
+    if (typeof global === 'undefined') return;
+    let options: DebugOptions;
+    if (typeof opts === 'boolean') options = { debug: opts };
+    else options = opts;
+
+    const enabled = options.debug;
+    const identifier = options.identifier || DEFAULT_DEBUG_IDENTIFIER;
+    if (!enabled) {
+      delete global[identifier];
+      return;
+    }
+    Object.defineProperty(global, identifier, {
+      configurable: false,
+      enumerable: false,
+      get: () => {
+        const obj = {};
+        this.mInstanceRegistry.forEach((instance, service) => {
+          const key = MetadataRegistry.get(service).getUniqueKey();
+          obj[key] = instance;
+        });
+        return obj;
+      },
     });
   }
 
