@@ -5,3 +5,4 @@ export * from './mq';
 export * from './observable';
 export * from './tagged';
 export * from './timer';
+export * from './env';
