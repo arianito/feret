@@ -8,6 +8,7 @@ export interface EventBus<T> {
 
 export class NativeEventBus<T> extends EventTarget implements EventBus<T> {
   dispatch(type: string, message: T) {
+    if (typeof CustomEvent === 'undefined') return;
     this.dispatchEvent(
       new CustomEvent<T>(type, {
         detail: message,

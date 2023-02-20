@@ -44,7 +44,7 @@ export class MQPlugin extends BasePlugin {
       const fn = instance[listener.propertyName];
 
       const scheduler = new Scheduler<unknown>((buff) => {
-        if (buff.length > 0) fn(buff);
+        if (buff.length > 0) fn.call(instance, buff);
       });
 
       const onMessage = (message: CustomEvent<NotifyEvent<unknown>>) => {

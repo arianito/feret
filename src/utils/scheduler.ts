@@ -41,7 +41,7 @@ export class Scheduler<T> {
       obj = { buffer, fn };
       this.mBuffer.set(key, obj);
     }
-    obj.buffer.push(message);
+    obj.buffer.unshift(message);
     obj.fn();
   }
 }
