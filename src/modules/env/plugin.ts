@@ -1,12 +1,12 @@
 import { PluginRegistry } from '../../registries';
 import { ServiceIdentifier } from '../../types';
 import { BasePlugin } from '../base-plugin';
-import { VariableDefinition } from './types';
+import { EnvDefinition } from './types';
 
 export class EnvPlugin extends BasePlugin {
   private static sVariables = new WeakMap<
     ServiceIdentifier,
-    Array<VariableDefinition>
+    Array<EnvDefinition>
   >();
 
   private getEnv(key: string, def: unknown): unknown {
@@ -36,7 +36,7 @@ export class EnvPlugin extends BasePlugin {
     );
   };
 
-  static extend(target: ServiceIdentifier, property: VariableDefinition) {
+  static extend(target: ServiceIdentifier, property: EnvDefinition) {
     let service = EnvPlugin.sVariables.get(target);
     if (!service) {
       service = [];

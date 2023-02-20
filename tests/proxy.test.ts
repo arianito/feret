@@ -1,4 +1,4 @@
-import { test, expect } from '@jest/globals';
+import { test } from '@jest/globals';
 test('test proxy triggers on chaning object properties', () => {
   const obj = {
     a: 1,

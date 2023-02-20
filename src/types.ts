@@ -4,6 +4,8 @@ export type ServiceIdentifier<T = unknown> =
   | Constructable<T>
   | AbstractConstructable<T>;
 
+export type ModuleIdentifier<T = unknown> = ServiceIdentifier<T>;
+
 export type Identifier = string | symbol;
 
 export type ServiceScope = 'container' | 'transient';
@@ -28,6 +30,7 @@ export type DebugOptions = {
 
 export type ContainerConfig = {
   isTest?: boolean;
+  modules: Array<ModuleIdentifier>;
 };
 
 export type ArrayOneOrMore<T> = { 0: T } & Array<T>;

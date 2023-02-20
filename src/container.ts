@@ -4,6 +4,7 @@ import {
   ServiceNotAvailableError,
 } from './errors';
 import { BasePlugin, PluginConstructor } from './modules/base-plugin';
+import { ModulePlugin } from './modules/core/plugin';
 import { MetadataRegistry, PluginRegistry } from './registries';
 import {
   Constructable,
@@ -24,11 +25,16 @@ export class Container {
   private mAliases = new Map<string | ServiceIdentifier, ServiceMetadata>();
   private mPlugins = new WeakMap<PluginConstructor, BasePlugin>();
 
-  constructor(private config: ContainerConfig = {}) {
+  constructor(private readonly config: ContainerConfig = { modules: [] }) {
     PluginRegistry.forEach((constructor) => {
       const plugin = new constructor(this);
       this.mPlugins.set(constructor, plugin);
     });
+  }
+
+  async bootSequence() {
+    const plugin = this.getPlugin(ModulePlugin);
+    await plugin.start(this.config.modules);
   }
 
   enableDebug();
@@ -67,8 +73,7 @@ export class Container {
       ...metadata,
       type: alias as unknown as Constructable<unknown>,
     };
-    if(metadata.name)
-      this.mAliases.set(metadata.name, serviceMetadata);
+    if (metadata.name) this.mAliases.set(metadata.name, serviceMetadata);
     this.mAliases.set(insteadOf, serviceMetadata);
   }
 
@@ -86,6 +91,7 @@ export class Container {
 
   get<T = unknown>(name: string): T;
   get<T = unknown>(type: ServiceIdentifier<T>): T;
+  get<T = unknown>(type: string | ServiceIdentifier<T>): T;
   get<T = unknown>(type: string | ServiceIdentifier<T>): T {
     const metadata = this.findClass(type);
 

@@ -3,7 +3,7 @@ import { ScheduleOptions } from '../../utils';
 
 export type ListenerDefinition = {
   propertyName: Identifier;
-  event: string;
+  eventName: string;
 } & ScheduleOptions;
 
 export type ListenerOptions = Omit<ListenerDefinition, 'propertyName'>;

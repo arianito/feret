@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 // sep
 import { beforeEach, describe, expect, test } from '@jest/globals';
-import { Autowired, Container, createTestbed, Service } from '../src';
+import { Container, createTestbed, Injected, Service } from '../src';
 import { ServiceNotAvailableError } from './../src/errors';
 
 describe('dependency injection', () => {
@@ -41,7 +41,7 @@ describe('dependency injection', () => {
 
     @Service()
     class Temp {
-      @Autowired() trans: Transient;
+      @Injected() trans: Transient;
     }
 
     //

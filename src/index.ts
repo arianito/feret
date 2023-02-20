@@ -4,20 +4,32 @@ if (!Reflect || !(Reflect as any).getMetadata) {
   throw new ReflectMetadataUnavailableError();
 }
 
-import { Container } from './container';
 export * from './container';
 export * from './modules';
 export * from './react-provider';
 export * from './types';
 
-export function createContainer() {
+import { Container } from './container';
+import { ModuleIdentifier } from './types';
+
+export function createContainer(): Container;
+export function createContainer(modules: Array<ModuleIdentifier>): Container;
+export function createContainer(
+  modules: Array<ModuleIdentifier> = [],
+): Container {
   return new Container({
     isTest: false,
+    modules: modules || [],
   });
 }
 
-export function createTestbed() {
+export function createTestbed(): Container;
+export function createTestbed(modules: Array<ModuleIdentifier>): Container;
+export function createTestbed(
+  modules: Array<ModuleIdentifier> = [],
+): Container {
   return new Container({
     isTest: true,
+    modules: modules || [],
   });
 }

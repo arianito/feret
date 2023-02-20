@@ -23,10 +23,7 @@ export class InjectablePlugin extends BasePlugin {
           acc[propertyName] = {
             configurable: false,
             enumerable: true,
-            get: () => {
-              if (name) return this.mContainer.get(name);
-              this.mContainer.get(type);
-            },
+            get: () => this.mContainer.get(name || type),
           };
           return acc;
         },

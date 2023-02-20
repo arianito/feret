@@ -6,11 +6,11 @@ export function Listen(opts: ListenerOptions): PropertyDecorator;
 export function Listen(opts: string | ListenerOptions): PropertyDecorator {
   return (target, propertyName) => {
     let options: ListenerOptions;
-    if (typeof opts === 'string') options = { event: opts };
+    if (typeof opts === 'string') options = { eventName: opts };
     else options = opts;
     MQPlugin.extend(target.constructor, {
       propertyName,
-      event: options.event,
+      eventName: options.eventName,
       schedule: options.schedule,
       cycleMs: options.cycleMs || 25,
     });

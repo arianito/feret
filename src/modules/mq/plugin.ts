@@ -1,4 +1,3 @@
-import { Container } from '../../container';
 import { PluginRegistry } from '../../registries';
 import { Identifier, ServiceIdentifier } from '../../types';
 import { Scheduler } from '../../utils';
@@ -15,16 +14,13 @@ export class MQPlugin extends BasePlugin {
   private readonly mGlobalChannelName = '*';
   private readonly mEventBus = new NativeEventBus<unknown>();
 
-  constructor(container: Container) {
-    super(container);
-  }
-
   subscribe(
     target: Identifier,
     listener: (message: CustomEvent<NotifyEvent<unknown>>) => void,
   ) {
     return this.mEventBus.subscribe(String(target), listener);
   }
+
   subscribeAll(listener: (message: CustomEvent<NotifyEvent<unknown>>) => void) {
     return this.mEventBus.subscribe(this.mGlobalChannelName, listener);
   }
@@ -40,8 +36,8 @@ export class MQPlugin extends BasePlugin {
     const listeners = MQPlugin.get(target);
     if (!listeners) return;
 
-    listeners.forEach((listener) => {
-      const fn = instance[listener.propertyName];
+    listeners.forEach(({ propertyName, schedule, cycleMs, eventName }) => {
+      const fn = instance[propertyName];
 
       const scheduler = new Scheduler<unknown>((buff) => {
         if (buff.length > 0) fn.call(instance, buff);
@@ -49,12 +45,12 @@ export class MQPlugin extends BasePlugin {
 
       const onMessage = (message: CustomEvent<NotifyEvent<unknown>>) => {
         scheduler.push(message.detail, {
-          schedule: listener.schedule,
-          cycleMs: listener.cycleMs,
+          schedule,
+          cycleMs,
         });
       };
 
-      this.subscribe(listener.event, onMessage);
+      this.subscribe(eventName, onMessage);
     });
   }
 

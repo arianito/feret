@@ -1,6 +1,6 @@
 import { Identifier } from '../../types';
 
-export type VariableDefinition = {
+export type EnvDefinition = {
   propertyName: Identifier;
   defaultValue: unknown;
 };
