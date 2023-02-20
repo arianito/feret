@@ -36,6 +36,7 @@ export function Module(
   else options = opts;
   return (target) => {
     ModulePlugin.extend(target, {
+      discovery: options.discovery || [],
       bootOrder: options.bootOrder || [],
     });
     Service()(target);
