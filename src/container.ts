@@ -21,7 +21,7 @@ const DEFAULT_DEBUG_IDENTIFIER = 'feret';
 
 export class Container {
   private mInstanceRegistry = new Map<ServiceIdentifier, unknown>();
-  private mAliases = new WeakMap<ServiceIdentifier, ServiceMetadata>();
+  private mAliases = new Map<string | ServiceIdentifier, ServiceMetadata>();
   private mPlugins = new WeakMap<PluginConstructor, BasePlugin>();
 
   constructor(private config: ContainerConfig = {}) {
@@ -67,11 +67,13 @@ export class Container {
       ...metadata,
       type: alias as unknown as Constructable<unknown>,
     };
+    if(metadata.name)
+      this.mAliases.set(metadata.name, serviceMetadata);
     this.mAliases.set(insteadOf, serviceMetadata);
   }
 
   private findClass<T = unknown>(
-    type: ServiceIdentifier<T>,
+    type: string | ServiceIdentifier<T>,
   ): ServiceMetadata<T> {
     let metadata = MetadataRegistry.get(type);
     if (this.config.isTest) {
@@ -82,7 +84,9 @@ export class Container {
     return metadata as unknown as ServiceMetadata<T>;
   }
 
-  get<T = unknown>(type: ServiceIdentifier<T>): T {
+  get<T = unknown>(name: string): T;
+  get<T = unknown>(type: ServiceIdentifier<T>): T;
+  get<T = unknown>(type: string | ServiceIdentifier<T>): T {
     const metadata = this.findClass(type);
 
     if (metadata.scope === 'transient')

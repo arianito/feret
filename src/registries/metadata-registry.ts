@@ -2,18 +2,21 @@ import { Constructable, ServiceIdentifier, ServiceMetadata } from '../types';
 
 export class MetadataRegistry {
   private static sCurrentId = 0;
-  private static sServices = new WeakMap<ServiceIdentifier, ServiceMetadata>();
+  private static sServices = new Map<
+    string | ServiceIdentifier,
+    ServiceMetadata
+  >();
 
   static set(type: ServiceIdentifier, metadata: ServiceMetadata) {
     const { id, key } = MetadataRegistry.generateServiceKey(metadata);
-    MetadataRegistry.sServices.set(type, {
-      ...metadata,
-      id,
-      getUniqueKey(suffix) {
-        if (suffix) return `${key}_${String(suffix)}`;
-        return key;
-      },
-    });
+    metadata.id = id;
+    metadata.getUniqueKey = (suffix) => {
+      if (suffix) return `${key}_${String(suffix)}`;
+      return key;
+    };
+
+    if (metadata.name) MetadataRegistry.sServices.set(metadata.name, metadata);
+    MetadataRegistry.sServices.set(type, metadata);
   }
 
   static register(type: ServiceIdentifier) {
@@ -35,7 +38,7 @@ export class MetadataRegistry {
     };
   }
 
-  static get(type: ServiceIdentifier) {
+  static get(type: string | ServiceIdentifier) {
     return MetadataRegistry.sServices.get(type);
   }
 }

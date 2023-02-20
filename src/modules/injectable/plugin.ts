@@ -1,12 +1,12 @@
 import { PluginRegistry } from '../../registries';
 import { ServiceIdentifier } from '../../types';
 import { BasePlugin } from '../base-plugin';
-import { PropertyDefinition } from './types';
+import { InjectedDefinition } from './types';
 
 export class InjectablePlugin extends BasePlugin {
   private static sInjectables = new WeakMap<
     ServiceIdentifier,
-    Array<PropertyDefinition>
+    Array<InjectedDefinition>
   >();
 
   onServiceInstantiated = (
@@ -18,18 +18,24 @@ export class InjectablePlugin extends BasePlugin {
 
     Object.defineProperties(
       instance,
-      properties.reduce<PropertyDescriptorMap>((acc, h) => {
-        acc[h.propertyName] = {
-          configurable: false,
-          enumerable: true,
-          value: this.mContainer.get(h.type),
-        };
-        return acc;
-      }, {}),
+      properties.reduce<PropertyDescriptorMap>(
+        (acc, { name, type, propertyName }) => {
+          acc[propertyName] = {
+            configurable: false,
+            enumerable: true,
+            get: () => {
+              if (name) return this.mContainer.get(name);
+              this.mContainer.get(type);
+            },
+          };
+          return acc;
+        },
+        {},
+      ),
     );
   };
 
-  static extend(target: ServiceIdentifier, property: PropertyDefinition) {
+  static extend(target: ServiceIdentifier, property: InjectedDefinition) {
     let service = InjectablePlugin.sInjectables.get(target);
     if (!service) {
       service = [];

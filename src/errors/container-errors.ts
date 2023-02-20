@@ -7,10 +7,12 @@ export class ContainerUnavailableError extends Error {
 }
 
 export class ServiceNotAvailableError extends Error {
-  constructor(private mType: ServiceIdentifier<unknown>) {
+  constructor(private mType: string | ServiceIdentifier<unknown>) {
     super();
   }
   get message() {
-    return `Service of type "${this.mType.name}" is not available.`;
+    return `Service of type "${
+      typeof this.mType === 'string' ? this.mType : this.mType.name
+    }" is not available.`;
   }
 }
