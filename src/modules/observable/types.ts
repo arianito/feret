@@ -1,8 +1,8 @@
 import {
-  ArrayOneOrMore,
+  Constructable,
   Identifier,
   ServiceIdentifier,
-  ServiceMetadata,
+  ServiceMetadata
 } from '../../types';
 import { ScheduleOptions } from '../../utils';
 
@@ -27,9 +27,16 @@ export type NotifyEvent = {
   bulk: Array<Message>;
 };
 
-export type ObserverOptions = {
-  services: ArrayOneOrMore<ServiceIdentifier>;
+export type ObserverOptions<T extends Array<ServiceIdentifier> = any[]> = {
+  services: [...T];
 } & ScheduleOptions;
+
+
+export type UseObserverOutput<T> = {
+  [K in keyof T]: T[K] extends Constructable<unknown>
+    ? InstanceType<T[K]>
+    : never;
+};
 
 export type LocalStateType = Record<string, any>;
 

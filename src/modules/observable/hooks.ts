@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { FeretContext } from '../../react-context';
-import { ArrayOneOrMore, ServiceIdentifier } from '../../types';
+import { ServiceIdentifier } from '../../types';
 import { Scheduler } from '../../utils';
 import { ObservablePlugin } from './plugin';
 
@@ -10,12 +10,19 @@ import {
   Message,
   NotifyEvent,
   ObserverOptions,
+  UseObserverOutput
 } from './types';
 
-export function useObserver(
-  opts: ObserverOptions | ArrayOneOrMore<ServiceIdentifier>,
-) {
-  let options: ObserverOptions;
+export function useObserver<T extends Array<ServiceIdentifier>>(
+  opts: ObserverOptions<T>['services'],
+): UseObserverOutput<T>;
+export function useObserver<T extends Array<ServiceIdentifier>>(
+  opts: ObserverOptions<T>,
+): UseObserverOutput<T>;
+export function useObserver<T extends Array<ServiceIdentifier>>(
+  opts: ObserverOptions<T> | ObserverOptions<T>['services'],
+): UseObserverOutput<T> {
+  let options: ObserverOptions<T>;
   if (Array.isArray(opts)) {
     options = {
       services: opts,
@@ -90,4 +97,8 @@ export function useObserver(
       release();
     };
   }, [options]);
+
+  return options.services.map((service) =>
+    container.get(service),
+  ) as unknown as UseObserverOutput<T>;
 }
